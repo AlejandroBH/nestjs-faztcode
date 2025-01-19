@@ -1,5 +1,16 @@
-import { Controller, Get, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  ParseBoolPipe,
+  ParseIntPipe,
+  Query,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
+import { ValidateuserPipe } from './pipes/validateuser/validateuser.pipe';
 
 @Controller()
 export class HelloController {
@@ -7,5 +18,42 @@ export class HelloController {
   index(@Req() request: Request, @Res() response: Response) {
     console.log(request.url);
     response.status(200).json('Hello World!');
+  }
+
+  @Get('/new')
+  @HttpCode(201)
+  someThingNew() {
+    return 'New Route';
+  }
+
+  @Get('/notfound')
+  @HttpCode(404)
+  notFoundPage() {
+    return '404 Page Not Found';
+  }
+
+  @Get('/error')
+  @HttpCode(500)
+  errorPage() {
+    return 'Error Route';
+  }
+
+  @Get('/ticket/:num')
+  getNumber(@Param('num', ParseIntPipe) num: number) {
+    console.log(typeof num);
+    return num + 14;
+  }
+
+  @Get('/active/:status')
+  isUserActive(@Param('status', ParseBoolPipe) status: boolean) {
+    console.log(typeof status);
+    return status;
+  }
+
+  @Get('/greet')
+  greet(@Query(ValidateuserPipe) query: { name: string; age: number }) {
+    console.log(typeof query.name);
+    console.log(typeof query.age);
+    return `Hello ${query.name}, you are ${query.age + 30} years old`;
   }
 }
